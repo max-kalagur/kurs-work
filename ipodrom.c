@@ -17,7 +17,9 @@ int randomHorseSpeed(){
 
 void termPreRace(int userScore) {
 
-   char output[1000] = "\n"
+   char res[4000];
+
+   char tmplt[1000] = "\n"
       "Your Score: %d\n"
       "\n"
       "\n"
@@ -52,7 +54,7 @@ void termPreRace(int userScore) {
 
    sprintf(res, tmplt, userScore);
 
-   printf(output);
+   printf(res);
 }
 
 void termRace(int horsesSpeed[], int horsesRaced[], int userHorseNumber, int raceTime, int firstHorseNumber, int userScore) {
@@ -71,8 +73,8 @@ void termRace(int horsesSpeed[], int horsesRaced[], int userHorseNumber, int rac
    char tmplt[3000] = "\n"
       "Your Score: %d\n"
       "Your Hourse #: %d\n"
+      "Distance: 1000m\n"
       "Race Time: %d sec\n"
-      "\n"
       "\n"
       "                                       Race is running!\n"
       "                                      First Hourse is #%d\n"
@@ -128,11 +130,11 @@ void termRaceAfter(int raceTime, int firstHorseNumber, int userHorseNumber, int 
       "Your Hourse #: %d\n"
       "Race Time: %d sec\n"
       "\n"
-      "\n"
       "                                       Race is finished!\n"
       "                                         Horse #%d won\n"
+      "                        Please choose the new horse to start the race again\n"
       "\n"
-      " FINISH |~ \n"
+      " |~ FINISH \n"
       "----------------------------------------------------------------------------------------------------\n"
       "1    o             \n"
       "   _/_/\\          \n"
@@ -182,39 +184,50 @@ int main() {
 
    scanf("%d", &userHorseNumber);
    
-   isRaceNow = 1;
+   while( userHorseNumber ) {
+
+      isRaceNow = 1;
+      
+      do {
    
-   do {
- 
-	float momentTime = 1;
-	sleep(momentTime);
-	raceTime = raceTime + momentTime;
+         float momentTime = 1;
+         sleep(momentTime);
+         raceTime = raceTime + momentTime;
 
-	for(int i=0; i < 4; i++) {
-		horsesSpeed[i] = randomHorseSpeed();
-		horsesRaced[i] = horsesRaced[i] + ( horsesSpeed[i] * momentTime );
-		if(firstHorseRaced < horsesRaced[i]) {
-			firstHorseNumber = i+1;
-			firstHorseRaced = horsesRaced[i];
-		}
-	}
+         for(int i=0; i < 4; i++) {
+            horsesSpeed[i] = randomHorseSpeed();
+            horsesRaced[i] = horsesRaced[i] + ( horsesSpeed[i] * momentTime );
+            if(firstHorseRaced < horsesRaced[i]) {
+               firstHorseNumber = i+1;
+               firstHorseRaced = horsesRaced[i];
+            }
+         }
 
-	clearScreen();
-	termRace(horsesSpeed, horsesRaced, userHorseNumber, raceTime, firstHorseNumber, userScore);
+         clearScreen();
+         termRace(horsesSpeed, horsesRaced, userHorseNumber, raceTime, firstHorseNumber, userScore);
 
-   } while(firstHorseRaced < distance);
+      } while(firstHorseRaced < distance);
 
-   isRaceNow = 0;
-   if(firstHorseNumber == userHorseNumber) {
-      userScore = userScore + 50;
-      userWon = 1;
+      isRaceNow = 0;
+      if(firstHorseNumber == userHorseNumber) {
+         userScore = userScore + 50;
+         userWon = 1;
+      }
+      else {
+         userScore = userScore - 50;
+         userWon = 0;
+      }
+      termRaceAfter(raceTime, firstHorseNumber, userHorseNumber, userScore, userWon);
+
+      scanf("%d", &userHorseNumber);
+
+      firstHorseRaced = 0;
+      raceTime = 0;
+      for(int i=0; i < 4; i++) {
+         horsesSpeed[i] = 0;
+         horsesRaced[i] = 0;
+      }
    }
-   else {
-      userScore = userScore - 50;
-      userWon = 0;
-   }
-   termRaceAfter(raceTime, firstHorseNumber, userHorseNumber, userScore, userWon);
-
 
    return 0;
 }
