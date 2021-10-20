@@ -217,6 +217,8 @@ int main() {
          userScore = userScore - 50;
          userWon = 0;
       }
+
+      clearScreen();
       termRaceAfter(raceTime, firstHorseNumber, userHorseNumber, userScore, userWon);
 
       scanf("%d", &userHorseNumber);
