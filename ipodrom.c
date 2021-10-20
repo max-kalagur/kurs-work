@@ -5,7 +5,7 @@
 
 void clearScreen()
 {
-  system("clear");
+   system("clear");
 }
 
 /* in m/s */
@@ -15,101 +15,150 @@ int randomHorseSpeed(){
    return ( min + rand() / (RAND_MAX / (max - min + 1) + 1) ) * 1000 / 3600;
 }
 
-void termPreRace() {
+void termPreRace(int userScore) {
 
    char output[1000] = "\n"
-"Your Score: 0\n"
-"\n"
-"\n"
-"\n"
-"\n"
-"                                       Please Choose The Hourse\n"
-"\n"
-"\n"
-"   START|~\n"
-"----------------------------------------------------------------------------------------------------\n"
-"1    o             \n"
-"   _/_/\\          \n"
-"~~(_|_/            \n"
-"   ||||            \n"
-"----------------------------------------------------------------------------------------------------\n"
-"2    o             \n"
-"   _/_/\\          \n"
-"~~(_|_/            \n"
-"   ||||            \n"
-"----------------------------------------------------------------------------------------------------\n"
-"3    o             \n"
-"   _/_/\\          \n"
-"~~(_|_/            \n"
-"   ||||            \n"
-"----------------------------------------------------------------------------------------------------\n"
-"4    o             \n"
-"   _/_/\\          \n"
-"~~(_|_/            \n"
-"   ||||            \n"
-"----------------------------------------------------------------------------------------------------\n"
-"\n";
+      "Your Score: %d\n"
+      "\n"
+      "\n"
+      "\n"
+      "\n"
+      "                                       Please Choose The Hourse\n"
+      "\n"
+      "\n"
+      "   START|~\n"
+      "----------------------------------------------------------------------------------------------------\n"
+      "1    o             \n"
+      "   _/_/\\          \n"
+      " /(_|_/            \n"
+      "   ||||            \n"
+      "----------------------------------------------------------------------------------------------------\n"
+      "2    o             \n"
+      "   _/_/\\          \n"
+      " /(_|_/            \n"
+      "   ||||            \n"
+      "----------------------------------------------------------------------------------------------------\n"
+      "3    o             \n"
+      "   _/_/\\          \n"
+      " /(_|_/            \n"
+      "   ||||            \n"
+      "----------------------------------------------------------------------------------------------------\n"
+      "4    o             \n"
+      "   _/_/\\          \n"
+      " /(_|_/            \n"
+      "   ||||            \n"
+      "----------------------------------------------------------------------------------------------------\n"
+      "\n";
 
+   sprintf(res, tmplt, userScore);
 
-printf(output);
-
-
+   printf(output);
 }
 
-void termRace(int horsesSpeed[], int horsesRaced[], int userHorseNumber, int raceTime, int firstHorseNumber) {
+void termRace(int horsesSpeed[], int horsesRaced[], int userHorseNumber, int raceTime, int firstHorseNumber, int userScore) {
 
    char res[4000];
    
    char *horseLegsPosition;
 
    if( raceTime % 2 == 1 ) {
-        horseLegsPosition = "/\/\\\\";
+      horseLegsPosition = "/\/\\\\";
    }
    else {
-	horseLegsPosition =  "\\/\/ ";
+	   horseLegsPosition =  "\\/\/ ";
    }
 
    char tmplt[3000] = "\n"
-"Your Score: 0\n"
-"Your Hourse #: %d\n"
-"Race Time: %d sec\n"
-"\n"
-"\n"
-"                                       Race is running!\n"
-"                                      First Hourse is #%d\n"
-"\n"
-"\n"
-"----------------------------------------------------------------------------------------------------\n"
-"1    o             \n"
-"   _/_/\\          \n"
-"~~(_|_/       speed: %d m/s    \n"
-"   %s       distance: %d m     \n"
-"----------------------------------------------------------------------------------------------------\n"
-"2    o             \n"
-"   _/_/\\          \n"
-"~~(_|_/       speed: %d m/s     \n"
-"   %s       distance: %d m     \n"
-"----------------------------------------------------------------------------------------------------\n"
-"3    o             \n"
-"   _/_/\\          \n"
-"~~(_|_/       speed: %d m/s     \n"
-"   %s       distance: %d m     \n"
-"----------------------------------------------------------------------------------------------------\n"
-"4    o             \n"
-"   _/_/\\          \n"
-"~~(_|_/       speed: %d m/s     \n"
-"   %s       distance: %d m     \n"
-"----------------------------------------------------------------------------------------------------\n"
-"\n";
+      "Your Score: %d\n"
+      "Your Hourse #: %d\n"
+      "Race Time: %d sec\n"
+      "\n"
+      "\n"
+      "                                       Race is running!\n"
+      "                                      First Hourse is #%d\n"
+      "\n"
+      "\n"
+      "----------------------------------------------------------------------------------------------------\n"
+      "1    o             \n"
+      "   _/_/\\          \n"
+      "~~(_|_/       speed: %d m/s    \n"
+      "   %s       distance: %d m     \n"
+      "----------------------------------------------------------------------------------------------------\n"
+      "2    o             \n"
+      "   _/_/\\          \n"
+      "~~(_|_/       speed: %d m/s     \n"
+      "   %s       distance: %d m     \n"
+      "----------------------------------------------------------------------------------------------------\n"
+      "3    o             \n"
+      "   _/_/\\          \n"
+      "~~(_|_/       speed: %d m/s     \n"
+      "   %s       distance: %d m     \n"
+      "----------------------------------------------------------------------------------------------------\n"
+      "4    o             \n"
+      "   _/_/\\          \n"
+      "~~(_|_/       speed: %d m/s     \n"
+      "   %s       distance: %d m     \n"
+      "----------------------------------------------------------------------------------------------------\n"
+      "\n";
 
-sprintf(res, tmplt, userHorseNumber, raceTime, firstHorseNumber,
-	horsesSpeed[0], horseLegsPosition, horsesRaced[0],
-	horsesSpeed[1], horseLegsPosition, horsesRaced[1],
-	horsesSpeed[2], horseLegsPosition, horsesRaced[2],
-	horsesSpeed[3], horseLegsPosition, horsesRaced[3]);
+   sprintf(res, tmplt, userScore, userHorseNumber, raceTime, firstHorseNumber,
+      horsesSpeed[0], horseLegsPosition, horsesRaced[0],
+      horsesSpeed[1], horseLegsPosition, horsesRaced[1],
+      horsesSpeed[2], horseLegsPosition, horsesRaced[2],
+      horsesSpeed[3], horseLegsPosition, horsesRaced[3]);
 
-printf(res);
+   printf(res);
+}
 
+void termRaceAfter(int raceTime, int firstHorseNumber, int userHorseNumber, int userScore, int userWon) {
+
+   char res[4000];
+
+   char *userScoreChange;
+
+   if( firstHorseNumber == userHorseNumber ) {
+      userScoreChange = "+50";
+   }
+   else {
+	   userScoreChange =  "-50";
+   }
+
+   char tmplt[3000] = "\n"
+      "Your Score: %d(%s)\n"
+      "Your Hourse #: %d\n"
+      "Race Time: %d sec\n"
+      "\n"
+      "\n"
+      "                                       Race is finished!\n"
+      "                                         Horse #%d won\n"
+      "\n"
+      " FINISH |~ \n"
+      "----------------------------------------------------------------------------------------------------\n"
+      "1    o             \n"
+      "   _/_/\\          \n"
+      " /(_|_/        \n"
+      "   ||||        \n"
+      "----------------------------------------------------------------------------------------------------\n"
+      "2    o             \n"
+      "   _/_/\\          \n"
+      " /(_|_/        \n"
+      "   ||||          \n"
+      "----------------------------------------------------------------------------------------------------\n"
+      "3    o             \n"
+      "   _/_/\\          \n"
+      " /(_|_/         \n"
+      "   ||||        \n"
+      "----------------------------------------------------------------------------------------------------\n"
+      "4    o             \n"
+      "   _/_/\\          \n"
+      " /(_|_/       \n"
+      "   ||||       \n"
+      "----------------------------------------------------------------------------------------------------\n"
+      "\n";
+
+   sprintf(res, tmplt, userScore, userScoreChange, userHorseNumber, raceTime, firstHorseNumber);
+
+   printf(res);
 }
 
 int main() {
@@ -118,9 +167,9 @@ int main() {
 
    clearScreen();
 
-   termPreRace();
-
    int isRaceNow = 0;
+   int userScore = 0;
+   int userWon;
    int distance = 1000;
    int horsesSpeed[4] = {0,0,0,0};
    int horsesRaced[4] = {0,0,0,0};
@@ -128,6 +177,8 @@ int main() {
    int firstHorseRaced;
    int raceTime = 0;
    int userHorseNumber;
+
+   termPreRace(userScore);
 
    scanf("%d", &userHorseNumber);
    
@@ -149,12 +200,20 @@ int main() {
 	}
 
 	clearScreen();
-	termRace(horsesSpeed, horsesRaced, userHorseNumber, raceTime, firstHorseNumber);
+	termRace(horsesSpeed, horsesRaced, userHorseNumber, raceTime, firstHorseNumber, userScore);
 
    } while(firstHorseRaced < distance);
 
    isRaceNow = 0;
-   termRaceAfter();
+   if(firstHorseNumber == userHorseNumber) {
+      userScore = userScore + 50;
+      userWon = 1;
+   }
+   else {
+      userScore = userScore - 50;
+      userWon = 0;
+   }
+   termRaceAfter(raceTime, firstHorseNumber, userHorseNumber, userScore, userWon);
 
 
    return 0;
