@@ -67,7 +67,7 @@ void termRace(int horsesSpeed[], int horsesRaced[], int userHorseNumber, int rac
       horseLegsPosition = "/\/\\\\";
    }
    else {
-	   horseLegsPosition =  "\\/\/ ";
+      horseLegsPosition =  "\\/\/ ";
    }
 
    char tmplt[3000] = "\n"
@@ -112,7 +112,7 @@ void termRace(int horsesSpeed[], int horsesRaced[], int userHorseNumber, int rac
    printf(res);
 }
 
-void termRaceAfter(int raceTime, int firstHorseNumber, int userHorseNumber, int userScore, int userWon) {
+void termRaceAfter(int raceTime, int firstHorseNumber, int userHorseNumber, int userScore) {
 
    char res[4000];
 
@@ -171,7 +171,6 @@ int main() {
 
    int isRaceNow = 0;
    int userScore = 0;
-   int userWon;
    int distance = 1000;
    int horsesSpeed[4] = {0,0,0,0};
    int horsesRaced[4] = {0,0,0,0};
@@ -211,15 +210,13 @@ int main() {
       isRaceNow = 0;
       if(firstHorseNumber == userHorseNumber) {
          userScore = userScore + 50;
-         userWon = 1;
       }
       else {
          userScore = userScore - 50;
-         userWon = 0;
       }
 
       clearScreen();
-      termRaceAfter(raceTime, firstHorseNumber, userHorseNumber, userScore, userWon);
+      termRaceAfter(raceTime, firstHorseNumber, userHorseNumber, userScore);
 
       scanf("%d", &userHorseNumber);
 
