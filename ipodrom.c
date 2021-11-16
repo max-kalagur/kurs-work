@@ -3,6 +3,122 @@
 #include <unistd.h>
 #include <time.h>
 
+#define HORSE_SPEED_MAX 90
+#define HORSE_SPEED_MIN 60
+#define HORSES_AMOUNT 4
+#define DISTANCE 1000
+
+typedef struct {
+	int speed;
+	int distance_raced;
+} horsesArr[HORSES_AMOUNT];
+
+typedef struct {
+	int isRaceNow;
+	int userScore;
+   int firstHorseNumber;
+   int firstHorseDistanceRaced;
+   int raceTime;
+   int usersHorseNumber;
+} gameContext;
+
+gameContext * initGameContext();
+horsesArr * initHorses();
+void clearScreen();
+int randomHorseSpeed();
+void viewPreRace(int userScore);
+void viewRace(gameContext * game, horsesArr * horses);
+void viewRaceAfter(gameContext * game, horsesArr * horses);
+
+
+gameContext * initGameContext() {
+
+   gameContext * game = malloc(sizeof(gameContext));
+   return game;
+}
+
+horsesArr * initHorses() {
+
+   horsesArr * horses = malloc(sizeof(horsesArr) * HORSES_AMOUNT);
+
+   if( horses != NULL ) {
+      for(register int i; i < HORSES_AMOUNT; i++) {
+         horses[i]->speed = 0;
+         horses[i]->distance_raced = 0;
+      }
+   }
+   return horses;
+}
+
+void freeGameMemory(gameContext * game, horsesArr * horses) {
+   free(game);
+   free(horses);
+}
+
+int main() {
+
+   srand(time(NULL));
+
+   clearScreen();
+
+   gameContext * game = initGameContext();
+   horsesArr * horses = initHorses();
+
+   viewPreRace(game->userScore);
+
+   scanf("%d", &game->usersHorseNumber);
+   
+   while( game->usersHorseNumber ) {
+
+      game->isRaceNow = 1;
+      
+      do {
+   
+         float momentTime = 1;
+         sleep(momentTime);
+         game->raceTime = game->raceTime + momentTime;
+
+         for(int i=0; i < HORSES_AMOUNT; i++) {
+            horses[i]->speed = randomHorseSpeed();
+            horses[i]->distance_raced = horses[i]->distance_raced + ( horses[i]->speed * momentTime );
+            if(game->firstHorseDistanceRaced < horses[i]->distance_raced) {
+               game->firstHorseNumber = i+1;
+               game->firstHorseDistanceRaced = horses[i]->distance_raced;
+            }
+         }
+
+         clearScreen();
+         viewRace(game, horses);
+
+      } while(game->firstHorseDistanceRaced < DISTANCE);
+
+      game->isRaceNow = 0;
+      if(game->firstHorseNumber == game->usersHorseNumber) {
+         game->userScore = game->userScore + 50;
+      }
+      else {
+         game->userScore = game->userScore - 50;
+      }
+
+      clearScreen();
+      viewRaceAfter(game, horses);
+
+      scanf("%d", &game->usersHorseNumber);
+
+      game->firstHorseDistanceRaced = 0;
+      game->raceTime = 0;
+      for(int i=0; i < HORSES_AMOUNT; i++) {
+         horses[i]->speed = 0;
+         horses[i]->distance_raced = 0;
+      }
+   }
+
+   freeGameMemory(game, horses);
+
+   return 0;
+}
+
+
 void clearScreen()
 {
    system("clear");
@@ -10,16 +126,15 @@ void clearScreen()
 
 /* in m/s */
 int randomHorseSpeed(){
-   int min = 60;
-   int max = 90;
-   return ( min + rand() / (RAND_MAX / (max - min + 1) + 1) ) * 1000 / 3600;
+   return ( HORSE_SPEED_MIN + rand() / (RAND_MAX / (HORSE_SPEED_MAX - HORSE_SPEED_MIN + 1) + 1) ) * 1000 / 3600;
 }
 
-void termPreRace(int userScore) {
+void viewPreRace(int userScore) {
 
-   char res[4000];
+   char * res     = malloc(sizeof(char) * 4000);
+   char * tmplt   = malloc(sizeof(char) * 1000);
 
-   char tmplt[1000] = "\n"
+   tmplt = "\n"
       "Your Score: %d\n"
       "\n"
       "\n"
@@ -55,22 +170,26 @@ void termPreRace(int userScore) {
    sprintf(res, tmplt, userScore);
 
    printf(res);
+
+   free(res);
+   free(tmplt);
 }
 
-void termRace(int horsesSpeed[], int horsesRaced[], int userHorseNumber, int raceTime, int firstHorseNumber, int userScore) {
+void viewRace(gameContext * game, horsesArr * horses) {
 
-   char res[4000];
+   char * res     = malloc(sizeof(char) * 4000);
+   char * tmplt   = malloc(sizeof(char) * 3000);
    
-   char *horseLegsPosition;
+   char * horseLegsPosition = malloc(sizeof(char) * 7);
 
-   if( raceTime % 2 == 1 ) {
+   if( game->raceTime % 2 == 1 ) {
       horseLegsPosition = "/\/\\\\";
    }
    else {
       horseLegsPosition =  "\\/\/ ";
    }
 
-   char tmplt[3000] = "\n"
+   tmplt = "\n"
       "Your Score: %d\n"
       "Your Hourse #: %d\n"
       "Distance: 1000m\n"
@@ -103,29 +222,33 @@ void termRace(int horsesSpeed[], int horsesRaced[], int userHorseNumber, int rac
       "----------------------------------------------------------------------------------------------------\n"
       "\n";
 
-   sprintf(res, tmplt, userScore, userHorseNumber, raceTime, firstHorseNumber,
-      horsesSpeed[0], horseLegsPosition, horsesRaced[0],
-      horsesSpeed[1], horseLegsPosition, horsesRaced[1],
-      horsesSpeed[2], horseLegsPosition, horsesRaced[2],
-      horsesSpeed[3], horseLegsPosition, horsesRaced[3]);
+   sprintf(res, tmplt, game->userScore, game->usersHorseNumber, game->raceTime, game->firstHorseNumber,
+      horses[0]->speed, horseLegsPosition, horses[0]->distance_raced,
+      horses[1]->speed, horseLegsPosition, horses[1]->distance_raced,
+      horses[2]->speed, horseLegsPosition, horses[2]->distance_raced,
+      horses[3]->speed, horseLegsPosition, horses[3]->distance_raced);
 
    printf(res);
+
+   free(res);
+   free(tmplt);
+   free(horseLegsPosition);
 }
 
-void termRaceAfter(int raceTime, int firstHorseNumber, int userHorseNumber, int userScore) {
+void viewRaceAfter(gameContext * game, horsesArr * horses) {
 
-   char res[4000];
+   char * res     = malloc(sizeof(char) * 4000);
+   char * tmplt   = malloc(sizeof(char) * 3000);
+   char * userScoreChange = malloc(sizeof(char) * 3);
 
-   char *userScoreChange;
-
-   if( firstHorseNumber == userHorseNumber ) {
+   if( game->firstHorseNumber == game->usersHorseNumber ) {
       userScoreChange = "+50";
    }
    else {
 	   userScoreChange =  "-50";
    }
 
-   char tmplt[3000] = "\n"
+   tmplt = "\n"
       "Your Score: %d(%s)\n"
       "Your Hourse #: %d\n"
       "Race Time: %d sec\n"
@@ -158,75 +281,11 @@ void termRaceAfter(int raceTime, int firstHorseNumber, int userHorseNumber, int 
       "----------------------------------------------------------------------------------------------------\n"
       "\n";
 
-   sprintf(res, tmplt, userScore, userScoreChange, userHorseNumber, raceTime, firstHorseNumber);
+   sprintf(res, tmplt, game->userScore, userScoreChange, game->usersHorseNumber, game->raceTime, game->firstHorseNumber);
 
    printf(res);
-}
 
-int main() {
-
-   srand(time(NULL));
-
-   clearScreen();
-
-   int isRaceNow = 0;
-   int userScore = 0;
-   int distance = 1000;
-   int horsesSpeed[4] = {0,0,0,0};
-   int horsesRaced[4] = {0,0,0,0};
-   int firstHorseNumber;
-   int firstHorseRaced;
-   int raceTime = 0;
-   int userHorseNumber;
-
-   termPreRace(userScore);
-
-   scanf("%d", &userHorseNumber);
-   
-   while( userHorseNumber ) {
-
-      isRaceNow = 1;
-      
-      do {
-   
-         float momentTime = 1;
-         sleep(momentTime);
-         raceTime = raceTime + momentTime;
-
-         for(int i=0; i < 4; i++) {
-            horsesSpeed[i] = randomHorseSpeed();
-            horsesRaced[i] = horsesRaced[i] + ( horsesSpeed[i] * momentTime );
-            if(firstHorseRaced < horsesRaced[i]) {
-               firstHorseNumber = i+1;
-               firstHorseRaced = horsesRaced[i];
-            }
-         }
-
-         clearScreen();
-         termRace(horsesSpeed, horsesRaced, userHorseNumber, raceTime, firstHorseNumber, userScore);
-
-      } while(firstHorseRaced < distance);
-
-      isRaceNow = 0;
-      if(firstHorseNumber == userHorseNumber) {
-         userScore = userScore + 50;
-      }
-      else {
-         userScore = userScore - 50;
-      }
-
-      clearScreen();
-      termRaceAfter(raceTime, firstHorseNumber, userHorseNumber, userScore);
-
-      scanf("%d", &userHorseNumber);
-
-      firstHorseRaced = 0;
-      raceTime = 0;
-      for(int i=0; i < 4; i++) {
-         horsesSpeed[i] = 0;
-         horsesRaced[i] = 0;
-      }
-   }
-
-   return 0;
+   free(res);
+   free(tmplt);
+   free(userScoreChange);
 }

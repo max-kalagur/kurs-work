@@ -1,0 +1,30 @@
+#include <stdio.h>
+
+
+
+
+int main() {
+
+
+	char hourse = "
+            ,~  
+           ~/(\ 
+  ~ ______~// `  
+~~~( )___(  
+
+   \|    \||
+   '\     |'"
+
+
+   printf("Hello, World!");
+
+
+
+
+
+
+
+
+
+   return 0;
+}
