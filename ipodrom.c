@@ -29,31 +29,7 @@ int randomHorseSpeed();
 void viewPreRace(int userScore);
 void viewRace(gameContext * game, horsesArr * horses);
 void viewRaceAfter(gameContext * game, horsesArr * horses);
-
-
-gameContext * initGameContext() {
-
-   gameContext * game = malloc(sizeof(gameContext));
-   return game;
-}
-
-horsesArr * initHorses() {
-
-   horsesArr * horses = malloc(sizeof(horsesArr) * HORSES_AMOUNT);
-
-   if( horses != NULL ) {
-      for(register int i; i < HORSES_AMOUNT; i++) {
-         horses[i]->speed = 0;
-         horses[i]->distance_raced = 0;
-      }
-   }
-   return horses;
-}
-
-void freeGameMemory(gameContext * game, horsesArr * horses) {
-   free(game);
-   free(horses);
-}
+void freeGameMemory(gameContext * game, horsesArr * horses);
 
 int main() {
 
@@ -118,6 +94,31 @@ int main() {
    return 0;
 }
 
+gameContext * initGameContext() {
+
+   gameContext * game = malloc(sizeof(gameContext));
+
+   return game;
+}
+
+horsesArr * initHorses() {
+
+   horsesArr * horses = malloc(sizeof(horsesArr) * HORSES_AMOUNT);
+
+   if( horses != NULL ) {
+      for(register int i; i < HORSES_AMOUNT; i++) {
+         horses[i]->speed = 0;
+         horses[i]->distance_raced = 0;
+      }
+   }
+   return horses;
+}
+
+void freeGameMemory(gameContext * game, horsesArr * horses) {
+
+   free(game);
+   free(horses);
+}
 
 void clearScreen()
 {
@@ -169,7 +170,7 @@ void viewPreRace(int userScore) {
 
    sprintf(res, tmplt, userScore);
 
-   printf(res);
+   printf("%s\n", res);
 
    free(res);
    free(tmplt);
@@ -228,7 +229,7 @@ void viewRace(gameContext * game, horsesArr * horses) {
       horses[2]->speed, horseLegsPosition, horses[2]->distance_raced,
       horses[3]->speed, horseLegsPosition, horses[3]->distance_raced);
 
-   printf(res);
+   printf("%s\n", res);
 
    free(res);
    free(tmplt);
@@ -283,7 +284,7 @@ void viewRaceAfter(gameContext * game, horsesArr * horses) {
 
    sprintf(res, tmplt, game->userScore, userScoreChange, game->usersHorseNumber, game->raceTime, game->firstHorseNumber);
 
-   printf(res);
+   printf("%s\n", res);
 
    free(res);
    free(tmplt);
