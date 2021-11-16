@@ -106,11 +106,12 @@ horsesArr * initHorses() {
    horsesArr * horses = malloc(sizeof(horsesArr) * HORSES_AMOUNT);
 
    if( horses != NULL ) {
-      for(register int i; i < HORSES_AMOUNT; i++) {
+      for(register int i = 0; i < HORSES_AMOUNT; i++) {
          horses[i]->speed = 0;
          horses[i]->distance_raced = 0;
       }
    }
+   
    return horses;
 }
 
@@ -173,7 +174,7 @@ void viewPreRace(int userScore) {
    printf("%s\n", res);
 
    free(res);
-   free(tmplt);
+   // free(tmplt);
 }
 
 void viewRace(gameContext * game, horsesArr * horses) {
@@ -232,8 +233,8 @@ void viewRace(gameContext * game, horsesArr * horses) {
    printf("%s\n", res);
 
    free(res);
-   free(tmplt);
-   free(horseLegsPosition);
+   // free(tmplt);
+   // free(horseLegsPosition);
 }
 
 void viewRaceAfter(gameContext * game, horsesArr * horses) {
@@ -287,6 +288,6 @@ void viewRaceAfter(gameContext * game, horsesArr * horses) {
    printf("%s\n", res);
 
    free(res);
-   free(tmplt);
-   free(userScoreChange);
+   // free(tmplt);
+   // free(userScoreChange);
 }
