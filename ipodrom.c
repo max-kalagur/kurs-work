@@ -287,10 +287,10 @@ void viewRace(gameContext * game, horsesArr * horses) {
    char * handsPosition       = malloc(sizeof(char) * 7);
 
    if( game->raceTime % 2 == 1 ) {
-      horseLegsPosition = "/\/\\\\";
+      horseLegsPosition = "//\\\\";
    }
    else {
-      horseLegsPosition =  "\\/\/ ";
+      horseLegsPosition =  "\\// ";
    }
 
    if( game->raceTime % 2 == 1 ) {
