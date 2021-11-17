@@ -313,7 +313,7 @@ void viewRace(gameContext * game, horsesArr * horses) {
       "Race Time: %d sec\n"
       "\n"
       "                                       Race is running!\n"
-      "                                      First Hourse is #%d\n"
+      "                                      First Horse is #%d\n"
       "\n"
       "\n"
       "-------------------------------------------------------------------------------|--------------------\n"
@@ -362,7 +362,7 @@ void viewRaceAfter(gameContext * game, horsesArr * horses) {
 
    tmplt = "\n"
       "Your Score: %d(%s)\n"
-      "Your Hourse #: %d\n"
+      "Your Horse #: %d\n"
       "Race Time: %d sec\n"
       "\n"
       "                                       Race is finished!\n"
