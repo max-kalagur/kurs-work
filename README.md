@@ -3,4 +3,4 @@
 gcc ipodrom.c -o ipodrom
 ./ipodrom
 ```
-![Alt text](game.gif) / ![](game.gif)
+![](game.gif)
