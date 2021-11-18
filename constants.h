@@ -1,0 +1,8 @@
+#ifndef HORSE_SPEED_MAX
+
+#define HORSE_SPEED_MAX 90
+#define HORSE_SPEED_MIN 60
+#define HORSES_AMOUNT 4
+#define DISTANCE 1000
+
+#endif 
