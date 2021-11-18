@@ -7,7 +7,7 @@
 #include "structs.h"
 #include "views.h"
 
-extern void runGame();
+void runGame();
 gameContext * initGameContext();
 horsesArr * initHorses();
 void clearScreen();
