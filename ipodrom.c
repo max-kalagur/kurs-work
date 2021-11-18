@@ -28,14 +28,15 @@ typedef struct {
 gameContext * initGameContext();
 horsesArr * initHorses();
 void clearScreen();
-int randomHorseSpeed();
-void viewPreRace(int userScore);
+int getRandomHorseSpeed();
+void viewPreRace(int userScore, horsesArr * horsesArr);
 void viewRace(gameContext * game, horsesArr * horses);
 void viewRaceAfter(gameContext * game, horsesArr * horses);
 void viewRaceFallenHorses(gameContext * game, horsesArr * horses);
 void freeGameMemory(gameContext * game, horsesArr * horses);
-char * generatePassiveHorseSprite(int num, int winnerNum);
+char * generatePassiveHorseSprite(int num, int winnerNum, horsesArr * horses);
 char * generateActiveHorseSprite(int num, horsesArr * horses, char * horseLegsPosition, char * handsPosition);
+void clearViewMemory(char * res, char ** horseSprites);
 
 int main() {
 
@@ -46,7 +47,7 @@ int main() {
    gameContext * game = initGameContext();
    horsesArr * horses = initHorses();
 
-   viewPreRace(game->userScore);
+   viewPreRace(game->userScore, horses);
 
    scanf("%d", &game->usersHorseNumber);
    
@@ -64,7 +65,7 @@ int main() {
          for(int i=0; i < HORSES_AMOUNT; i++) {
 
             if( !horses[i]->is_fallen ) {
-               horses[i]->speed = randomHorseSpeed();
+               horses[i]->speed = getRandomHorseSpeed();
                horses[i]->distance_raced = horses[i]->distance_raced + ( horses[i]->speed * momentTime );
             }
             else {
@@ -103,6 +104,11 @@ int main() {
 
       scanf("%d", &game->usersHorseNumber);
 
+      if( game->usersHorseNumber == 0 ) {
+         freeGameMemory(game, horses);
+         break;
+      }
+
       game->firstHorseNumber = 0;
       game->firstHorseDistanceRaced = 0;
       game->raceTime = 0;
@@ -113,8 +119,6 @@ int main() {
          horses[i]->race_boost = 0;
       }
    }
-
-   freeGameMemory(game, horses);
 
    return 0;
 }
@@ -152,42 +156,66 @@ void clearScreen()
 }
 
 /* in m/s */
-int randomHorseSpeed(){
+int getRandomHorseSpeed(){
    return ( HORSE_SPEED_MIN + rand() / (RAND_MAX / (HORSE_SPEED_MAX - HORSE_SPEED_MIN + 1) + 1) ) * 1000 / 3600;
 }
 
-int randomHorseFell( int num ){
-   int r = ((rand() % 10) + 1) * 2;
+int isRandomHorseFell( int num ){
+   int r = rand() % 25;
    return num == r;
 }
 
-char * generatePassiveHorseSprite(int num, int winnerNum) {
+void clearViewMemory(char * res, char ** horseSprites) {
+
+   free(res);
+   for(register int i=0; i < HORSES_AMOUNT; i++) {
+      free(horseSprites[i]);
+      horseSprites[i] = NULL;
+   }
+   free(horseSprites);
+   res = NULL;
+   horseSprites = NULL;
+}
+
+char * generatePassiveHorseSprite(int num, int winnerNum, horsesArr * horses) {
 
    char * res     = malloc(sizeof(char) * 1000);
    char * tmplt   = malloc(sizeof(char) * 1000);
    char * win     = malloc(sizeof(char) * 13);
 
-   win[0] = '\0';
-   if( winnerNum != 0 && winnerNum == num+1 ) {
-      win = "<<<WINNER!!!";
+   if( horses[num]->is_fallen ) {
+      tmplt = 
+         "%d             \n"
+         "   ___/\\  o     \n"
+         " /(_|_/   |\\      \n"
+         "   ||||   /\\    \n"
+      ;
+
+      sprintf(res, tmplt, num+1);
    }
+   else {
+      win[0] = '\0';
+      if( winnerNum != 0 && winnerNum == num+1 ) {
+         win = "<<<ПЕРЕМОЖЕЦЬ!!!";
+      }
 
-   tmplt = 
-      "%d    o             \n"
-      "   _/_/\\          \n"
-      " /(_|_/      %s     \n"
-      "   ||||            \n"
-   ;
+      tmplt = 
+         "%d    o             \n"
+         "   _/_/\\          \n"
+         " /(_|_/      %s     \n"
+         "   ||||            \n"
+      ;
 
-   sprintf(res, tmplt, num+1, win);
+      sprintf(res, tmplt, num+1, win);
+   }
 
    return res;
 }
 
 char * generateActiveHorseSprite(int num, horsesArr * horses, char * horseLegsPosition, char * handsPosition) {
 
-   char * res     = malloc(sizeof(char) * 1000);
-   char * tmplt   = malloc(sizeof(char) * 1000);
+   char * res     = malloc(sizeof(char) * 1500);
+   char * tmplt   = malloc(sizeof(char) * 1500);
    char * boost   = malloc(sizeof(char) * 200);
 
    if( horses[num]->is_fallen ) {
@@ -200,7 +228,7 @@ char * generateActiveHorseSprite(int num, horsesArr * horses, char * horseLegsPo
       boost[boostI] = '\0';
 
       tmplt = 
-         "%s%d   >>> IS FALLEN <<< \n"
+         "%s%d   >>> ВЕРШНИК УПАВ <<< \n"
          "%s   __ /\\      \n"
          "%s/(_/_/  %s   \n"
          "%s /||\\  _\\|    \n"
@@ -222,42 +250,41 @@ char * generateActiveHorseSprite(int num, horsesArr * horses, char * horseLegsPo
       tmplt = 
          "%s%d    o             \n"
          "%s   _/_/\\          \n"
-         "%s~~(_|_/    speed: %d m/s \n"
-         "%s   %s    dist.: %d m     \n"
+         "%s~~(_|_/    швид.: %d м/с \n"
+         "%s   %s    дист.: %d м     \n"
       ;
       
       sprintf(res, tmplt, boost, num+1, boost, boost, horses[num]->speed, boost, horseLegsPosition, horses[num]->distance_raced);
 
-      // free(tmplt);
-      // free(boost);
-
-      horses[num]->is_fallen = randomHorseFell( num );
+      horses[num]->is_fallen = isRandomHorseFell( num );
    }
+
+   free(boost);
 
    return res;
 }
 
-void viewPreRace(int userScore) {
+void viewPreRace(int userScore, horsesArr * horsesArr) {
 
    char * res     = malloc(sizeof(char) * 4000);
    char * tmplt   = malloc(sizeof(char) * 1000);
    char ** horseSprites = malloc(sizeof(char) * 2000);
 
-   for(register int i=0; i <= HORSES_AMOUNT; i++) {
+   for(register int i=0; i < HORSES_AMOUNT; i++) {
       horseSprites[i] = malloc(sizeof(char) * 500);
-      horseSprites[i] = generatePassiveHorseSprite(i, 0);
+      horseSprites[i] = generatePassiveHorseSprite(i, 0, horsesArr);
    }
 
    tmplt = "\n"
-      "Your Score: %d\n"
+      "Ваш Рахунок: %d\n"
       "\n"
       "\n"
       "\n"
       "\n"
-      "                                       Please Choose The Hourse\n"
+      "                                       Будь ласка оберіть # коня (чи 0 для виходу)\n"
       "\n"
       "\n"
-      "   START|~\n"
+      "   СТАРТ|~\n"
       "----------------------------------------------------------------------------------------------------\n"
       "%s"
       "----------------------------------------------------------------------------------------------------\n"
@@ -273,16 +300,14 @@ void viewPreRace(int userScore) {
 
    printf("%s\n", res);
 
-   free(res);
-   free(horseSprites);
-   // free(tmplt);
+   clearViewMemory(res, horseSprites);
 }
 
 void viewRace(gameContext * game, horsesArr * horses) {
 
-   char * res                 = malloc(sizeof(char) * 5000);
-   char * tmplt               = malloc(sizeof(char) * 2000);
-   char ** horseSprites       = malloc(sizeof(char) * 4000);
+   char * res                 = malloc(sizeof(char) * 6000);
+   char * tmplt               = malloc(sizeof(char) * 4000);
+   char ** horseSprites       = malloc(sizeof(char) * 5000);
    char * horseLegsPosition   = malloc(sizeof(char) * 7);
    char * handsPosition       = malloc(sizeof(char) * 7);
 
@@ -301,19 +326,18 @@ void viewRace(gameContext * game, horsesArr * horses) {
    }
 
    for(register int i=0; i < HORSES_AMOUNT; i++) {
-      horseSprites[i] = malloc(sizeof(char) * 1000);
+      horseSprites[i] = malloc(sizeof(char) * 1250);
       horseSprites[i] = generateActiveHorseSprite(i, horses, horseLegsPosition, handsPosition);
    }
 
-
    tmplt = "\n"
-      "Your Score: %d\n"
-      "Your Hourse #: %d\n"
-      "Distance: %d m\n"
-      "Race Time: %d sec\n"
+      "Ваш Рахунок: %d\n"
+      "Ваш Кінь #: %d\n"
+      "Дистанція: %d m\n"
+      "Час Гонки: %d sec\n"
       "\n"
-      "                                       Race is running!\n"
-      "                                      First Horse is #%d\n"
+      "                                       Гонка почалась!\n"
+      "                                       Лідирує Кінь #%d\n"
       "\n"
       "\n"
       "-------------------------------------------------------------------------------|--------------------\n"
@@ -335,10 +359,7 @@ void viewRace(gameContext * game, horsesArr * horses) {
 
    printf("%s\n", res);
 
-   free(res);
-   free(horseSprites);
-   // free(tmplt);
-   // free(horseLegsPosition);
+   clearViewMemory(res, horseSprites);
 }
 
 void viewRaceAfter(gameContext * game, horsesArr * horses) {
@@ -346,11 +367,11 @@ void viewRaceAfter(gameContext * game, horsesArr * horses) {
    char * res     = malloc(sizeof(char) * 4000);
    char * tmplt   = malloc(sizeof(char) * 3000);
    char * userScoreChange = malloc(sizeof(char) * 3);
-   char ** horseSprites = malloc(sizeof(char) * 2000);
+   char ** horseSprites = malloc(sizeof(char) * 3000);
 
-   for(register int i=0; i <= HORSES_AMOUNT; i++) {
+   for(register int i=0; i < HORSES_AMOUNT; i++) {
       horseSprites[i] = malloc(sizeof(char) * 500);
-      horseSprites[i] = generatePassiveHorseSprite(i, game->firstHorseNumber);
+      horseSprites[i] = generatePassiveHorseSprite(i, game->firstHorseNumber, horses);
    }
 
    if( game->firstHorseNumber == game->usersHorseNumber ) {
@@ -361,15 +382,15 @@ void viewRaceAfter(gameContext * game, horsesArr * horses) {
    }
 
    tmplt = "\n"
-      "Your Score: %d(%s)\n"
-      "Your Horse #: %d\n"
-      "Race Time: %d sec\n"
+      "Ваш Рахунок: %d(%s)\n"
+      "Ваш Кінь #: %d\n"
+      "Час Гонки: %d sec\n"
       "\n"
-      "                                       Race is finished!\n"
-      "                                         Horse #%d won\n"
-      "                        Please choose the new horse to start the race again\n"
+      "                                       Гонка Закінчилась!\n"
+      "                                         Кінь #%d Переміг\n"
+      "                        Будь ласка оберіть # коня щоб розпочати гонку (чи 0 для виходу)\n"
       "\n"
-      " |~ FINISH \n"
+      " |~ ФІНІШ \n"
       "----------------------------------------------------------------------------------------------------\n"
       "%s"
       "----------------------------------------------------------------------------------------------------\n"
@@ -389,33 +410,30 @@ void viewRaceAfter(gameContext * game, horsesArr * horses) {
 
    printf("%s\n", res);
 
-   free(res);
-   free(horseSprites);
-   // free(tmplt);
-   // free(userScoreChange);
+   clearViewMemory(res, horseSprites);
 }
 
 void viewRaceFallenHorses(gameContext * game, horsesArr * horses) {
 
-   char * res     = malloc(sizeof(char) * 5000);
-   char * tmplt   = malloc(sizeof(char) * 4000);
-   char ** horseSprites = malloc(sizeof(char) * 2000);
+   char * res     = malloc(sizeof(char) * 2000);
+   char * tmplt   = malloc(sizeof(char) * 1000);
+   char ** horseSprites = malloc(sizeof(char) * 3000);
 
-   for(register int i=0; i <= HORSES_AMOUNT; i++) {
+   for(register int i=0; i < HORSES_AMOUNT; i++) {
       horseSprites[i] = malloc(sizeof(char) * 500);
-      horseSprites[i] = generatePassiveHorseSprite(i, 0);
+      horseSprites[i] = generatePassiveHorseSprite(i, 0, horses);
    }
 
    tmplt = "\n"
-      "Your Score: %d\n"
-      "Your Hourse #: %d\n"
-      "Race Time: %d sec\n"
+      "Ваш Рахунок: %d\n"
+      "Ваш Кінь #: %d\n"
+      "Час Гонки: %d sec\n"
       "\n"
-      "                                       Race is finished!\n"
-      "                                    All Hourses Are Fallen :(\n"
-      "                        Please choose the new horse to start the race again\n"
+      "                                       Гонка Закінчилась!\n"
+      "                                      Усі вершники упали :(\n"
+      "                        Будь ласка оберіть # коня щоб розпочати гонку (чи 0 для виходу)\n"
       "\n"
-      " |~ FINISH \n"
+      " |~ ФІНІШ \n"
       "----------------------------------------------------------------------------------------------------\n"
       "%s"
       "----------------------------------------------------------------------------------------------------\n"
@@ -435,6 +453,5 @@ void viewRaceFallenHorses(gameContext * game, horsesArr * horses) {
 
    printf("%s\n", res);
 
-   free(res);
-   free(horseSprites);
+   clearViewMemory(res, horseSprites);
 }
