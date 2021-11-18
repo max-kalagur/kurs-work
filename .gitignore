@@ -1,2 +1,4 @@
-ipodrom
 .vscode
+game.o
+views.o
+start
