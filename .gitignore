@@ -1,4 +1,5 @@
 .vscode
 game.o
 views.o
+errors.o
 start
