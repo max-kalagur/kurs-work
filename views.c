@@ -3,6 +3,7 @@
 
 #include "constants.h"
 #include "structs.h"
+#include "errors.h"
 
 int isRandomHorseFell( int num );
 void viewPreRace(int userScore, horsesArr * horsesArr);
@@ -14,7 +15,7 @@ char * generateActiveHorseSprite(int num, horsesArr * horses, char * horseLegsPo
 void clearViewMemory(char * res, char ** horseSprites);
 
 int isRandomHorseFell( int num ){
-   int r = rand() % 25;
+   int r = rand() % 70;
    return num == r;
 }
 
@@ -35,6 +36,8 @@ char * generatePassiveHorseSprite(int num, int winnerNum, horsesArr * horses) {
    char * res     = malloc(sizeof(char) * 1000);
    char * tmplt   = malloc(sizeof(char) * 1000);
    char * win     = malloc(sizeof(char) * 13);
+
+   checkMemErr(3, res, tmplt, win);
 
    if( horses[num]->is_fallen ) {
       tmplt = 
@@ -70,6 +73,8 @@ char * generateActiveHorseSprite(int num, horsesArr * horses, char * horseLegsPo
    char * res     = malloc(sizeof(char) * 1500);
    char * tmplt   = malloc(sizeof(char) * 1500);
    char * boost   = malloc(sizeof(char) * 200);
+
+   checkMemErr(3, res, tmplt, boost);
 
    if( horses[num]->is_fallen ) {
 
@@ -123,8 +128,12 @@ void viewPreRace(int userScore, horsesArr * horsesArr) {
    char * tmplt   = malloc(sizeof(char) * 1000);
    char ** horseSprites = malloc(sizeof(char) * 2000);
 
+   checkMemErr(3, res, tmplt, horseSprites);
+
    for(register int i=0; i < HORSES_AMOUNT; i++) {
+
       horseSprites[i] = malloc(sizeof(char) * 500);
+
       horseSprites[i] = generatePassiveHorseSprite(i, 0, horsesArr);
    }
 
@@ -164,6 +173,8 @@ void viewRace(gameContext * game, horsesArr * horses) {
    char * horseLegsPosition   = malloc(sizeof(char) * 7);
    char * handsPosition       = malloc(sizeof(char) * 7);
 
+   checkMemErr(5, res, tmplt, horseSprites, horseLegsPosition, handsPosition);
+
    if( game->raceTime % 2 == 1 ) {
       horseLegsPosition = "//\\\\";
    }
@@ -179,15 +190,18 @@ void viewRace(gameContext * game, horsesArr * horses) {
    }
 
    for(register int i=0; i < HORSES_AMOUNT; i++) {
+
       horseSprites[i] = malloc(sizeof(char) * 1250);
+      checkMemErr(1, horseSprites[i]);
+
       horseSprites[i] = generateActiveHorseSprite(i, horses, horseLegsPosition, handsPosition);
    }
 
    tmplt = "\n"
       "Ваш Рахунок: %d\n"
       "Ваш Кінь #: %d\n"
-      "Дистанція: %d m\n"
-      "Час Гонки: %d sec\n"
+      "Дистанція: %d м\n"
+      "Час Гонки: %d сек\n"
       "\n"
       "                                       Гонка почалась!\n"
       "                                       Лідирує Кінь #%d\n"
@@ -222,8 +236,13 @@ void viewRaceAfter(gameContext * game, horsesArr * horses) {
    char * userScoreChange = malloc(sizeof(char) * 3);
    char ** horseSprites = malloc(sizeof(char) * 3000);
 
+   checkMemErr(4, res, tmplt, userScoreChange, horseSprites);
+
    for(register int i=0; i < HORSES_AMOUNT; i++) {
+
       horseSprites[i] = malloc(sizeof(char) * 500);
+      checkMemErr(1, horseSprites[i]);
+      
       horseSprites[i] = generatePassiveHorseSprite(i, game->firstHorseNumber, horses);
    }
 
@@ -237,7 +256,7 @@ void viewRaceAfter(gameContext * game, horsesArr * horses) {
    tmplt = "\n"
       "Ваш Рахунок: %d(%s)\n"
       "Ваш Кінь #: %d\n"
-      "Час Гонки: %d sec\n"
+      "Час Гонки: %d сек\n"
       "\n"
       "                                       Гонка Закінчилась!\n"
       "                                         Кінь #%d Переміг\n"
@@ -272,15 +291,20 @@ void viewRaceFallenHorses(gameContext * game, horsesArr * horses) {
    char * tmplt   = malloc(sizeof(char) * 1000);
    char ** horseSprites = malloc(sizeof(char) * 3000);
 
+   checkMemErr(3, res, tmplt, horseSprites);
+
    for(register int i=0; i < HORSES_AMOUNT; i++) {
+
       horseSprites[i] = malloc(sizeof(char) * 500);
+      checkMemErr(1, horseSprites[i]);
+
       horseSprites[i] = generatePassiveHorseSprite(i, 0, horses);
    }
 
    tmplt = "\n"
       "Ваш Рахунок: %d\n"
       "Ваш Кінь #: %d\n"
-      "Час Гонки: %d sec\n"
+      "Час Гонки: %d сек\n"
       "\n"
       "                                       Гонка Закінчилась!\n"
       "                                      Усі вершники упали :(\n"

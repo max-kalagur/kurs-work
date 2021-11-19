@@ -9,5 +9,5 @@ int main() {
 
    runGame();
 
-   return 0;
+   return EXIT_SUCCESS;
 }

@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "structs.h"
 #include "views.h"
+#include "errors.h"
 
 void runGame();
 gameContext * initGameContext();

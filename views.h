@@ -3,6 +3,7 @@
 
 #include "constants.h"
 #include "structs.h"
+#include "errors.h"
 
 int isRandomHorseFell( int num );
 void viewPreRace(int userScore, horsesArr * horsesArr);
